@@ -1,0 +1,3 @@
+[submodule "loragw"]
+	path = loragw
+	url = https://github.com/Lora-net/lora_gateway.git
