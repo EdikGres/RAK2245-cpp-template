@@ -9,6 +9,7 @@
 
 extern "C" {
 #include "loragw_hal.h"
+#include "loragw_aux.h"
 }
 
 #define MSG(args...) fprintf(stderr, args) /* message that is destined to the user */
@@ -28,8 +29,9 @@ int main() {
     boardconf.clksrc = 1; //radio B
     lgw_board_setconf(boardconf);
 
+    memset(&rfconf, 0, sizeof(rfconf));
     rfconf.enable = true;
-    rfconf.freq_hz = (uint32_t) ((868 * 1e6) + 0.5);
+    rfconf.freq_hz = (uint32_t) 868000000;
     rfconf.rssi_offset = 0.0;
     rfconf.type = LGW_RADIO_TYPE_SX1257;
 
@@ -92,23 +94,24 @@ int main() {
     }
 
     memset(&txpkt, 0, sizeof(txpkt));
-    txpkt.freq_hz = rfconf.freq_hz;
+    txpkt.freq_hz = 868000000;
     txpkt.tx_mode = IMMEDIATE;
     txpkt.rf_chain = TX_RF_CHAIN;
-    txpkt.rf_power = 14;
+    txpkt.rf_power = 27;
     txpkt.modulation = MOD_LORA;
     txpkt.bandwidth = BW_250KHZ;
     txpkt.datarate = DR_LORA_SF8;
     txpkt.coderate = CR_LORA_4_5;
     txpkt.invert_pol = false;
     txpkt.preamble = 12;
-    txpkt.size = 50;
+    txpkt.size = 250;
 
-    uint8_t text[50];
-    for (int j = 0; j < 50; ++j) {
-        text[j] = j % 5;
+    uint8_t text[250];
+    for (int j = 0; j < 250; ++j) {
+        text[j] = 'a';
     }
-    memcpy(txpkt.payload, text, 50);
+//    memcpy(txpkt.payload, text, 50);
+    strcpy((char*)txpkt.payload, "TEST**abcdefghijklmnopqrstuvwxyz#0123456789#ABCDEFGHIJKLMNOPQRSTUVWXYZ#0123456789#abcdefghijklmnopqrstuvwxyz#0123456789#ABCDEFGHIJKLMNOPQRSTUVWXYZ#0123456789#abcdefghijklmnopqrstuvwxyz#0123456789#ABCDEFGHIJKLMNOPQRSTUVWXYZ#0123456789#abcdefghijklmnopqrs#");
 
     printf("sending packet...\n");
 
@@ -116,9 +119,11 @@ int main() {
     if (i == LGW_HAL_ERROR) {
         printf("ERROR\n");
         return EXIT_FAILURE;
-    } else if (LGW_HAL_SUCCESS){
+    } else {
         printf("All OK!!!\n");
     }
+
+    wait_ms(1500);
 
     lgw_stop();
 
