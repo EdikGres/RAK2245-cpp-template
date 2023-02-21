@@ -1,10 +1,10 @@
 APP_NAME := sx1301
 
-LGW_PATH ?= libloragw
+LGW_PATH ?= loragw/libloragw
 
 
 ARCH = arm
-CROSS_COMPILE = arm-linux-gnueabihf-
+CROSS_COMPILE = 
 
 export ARCH
 export CROSS_COMPILE
@@ -32,13 +32,13 @@ all: $(APP_NAME)
 clean: 
 	rm -f $(OBJDIR)/*.o
 	rm -f $(APP_NAME)
-	$(MAKE) clean -e -C libloragw
+	$(MAKE) clean -e -C $(LGW_PATH)
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
 
 $(OBJDIR)/$(APP_NAME).o: src/$(APP_NAME).cpp | $(OBJDIR)
-	$(MAKE) all -e -C libloragw
+	$(MAKE) all -e -C $(LGW_PATH)
 	$(CXX) -c $(CXXFLAGS) -I$(LGW_PATH)/inc $< -o $@
 	
 
