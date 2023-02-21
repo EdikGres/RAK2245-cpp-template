@@ -4,7 +4,7 @@ LGW_PATH ?= loragw/libloragw
 
 
 ARCH = arm
-CROSS_COMPILE = 
+CROSS_COMPILE = arm-linux-gnueabihf-
 
 export ARCH
 export CROSS_COMPILE
