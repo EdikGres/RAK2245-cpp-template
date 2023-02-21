@@ -120,10 +120,16 @@ int main() {
         printf("ERROR\n");
         return EXIT_FAILURE;
     } else {
-        printf("All OK!!!\n");
+//        printf("All OK!!!\n");
     }
 
-    wait_ms(1500);
+    //wait_ms(1500);
+    uint8_t status_var;
+    do {
+        wait_ms(5);
+        lgw_status(TX_STATUS, &status_var); /* get TX status */
+    } while (status_var != TX_FREE);
+    printf("OK package has been sent\n");
 
     lgw_stop();
 
