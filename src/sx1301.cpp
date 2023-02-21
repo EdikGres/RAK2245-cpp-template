@@ -18,6 +18,7 @@ extern "C" {
 struct lgw_conf_board_s boardconf;
 struct lgw_conf_rxrf_s rfconf;
 static struct lgw_tx_gain_lut_s txgain_lut = {};
+struct lgw_pkt_tx_s txpkt;
 
 
 int main() {
@@ -89,6 +90,37 @@ int main() {
         MSG("ERROR: failed to start the concentrator\n");
         return EXIT_FAILURE;
     }
+
+    memset(&txpkt, 0, sizeof(txpkt));
+    txpkt.freq_hz = rfconf.freq_hz;
+    txpkt.tx_mode = IMMEDIATE;
+    txpkt.rf_chain = TX_RF_CHAIN;
+    txpkt.rf_power = 14;
+    txpkt.modulation = MOD_LORA;
+    txpkt.bandwidth = BW_250KHZ;
+    txpkt.datarate = DR_LORA_SF8;
+    txpkt.coderate = CR_LORA_4_5;
+    txpkt.invert_pol = false;
+    txpkt.preamble = 12;
+    txpkt.size = 50;
+
+    uint8_t text[50];
+    for (int j = 0; j < 50; ++j) {
+        text[j] = j % 5;
+    }
+    memcpy(txpkt.payload, text, 50);
+
+    printf("sending packet...\n");
+
+    i = lgw_send(txpkt); /* non-blocking scheduling of TX packet */
+    if (i == LGW_HAL_ERROR) {
+        printf("ERROR\n");
+        return EXIT_FAILURE;
+    } else if (LGW_HAL_SUCCESS){
+        printf("All OK!!!\n");
+    }
+
+    lgw_stop();
 
     std::cout << lgw_version_info() << std::endl;
     return 0;
